@@ -82,7 +82,6 @@ POPULAR_STOCKS = [
 ]
 
 # ─── DATA FETCH ──────────────────────────────────────────────────────────────
-@st.cache_data(ttl=300)  # cache 5 minutes
 def fetch_stock_data(symbol: str):
     ticker_ns  = f"{symbol}.NS"
     ticker_bse = f"{symbol}.BO"
@@ -93,15 +92,11 @@ def fetch_stock_data(symbol: str):
             df = tk.history(period="2y", interval="1d", auto_adjust=True)
             if df is not None and len(df) > 50:
                 df = df.dropna(subset=["Close"])
-                info = {}
-                try:
-                    info = tk.fast_info
-                except:
-                    pass
-                return df, info, ticker
+                return df, {}, ticker
         except Exception:
             continue
     return None, None, None
+
 
 
 def calc_ema(series: pd.Series, period: int) -> pd.Series:
